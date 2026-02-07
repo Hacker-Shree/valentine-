@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rose Day 🌹</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  height: 100vh;
+  background: linear-gradient(135deg, #ff758c, #ff7eb3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  overflow: hidden;
+}
+
+.container {
+  text-align: center;
+  animation: fadeIn 1.5s ease;
+  z-index: 5;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+#fromText {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.question {
+  font-size: 1.3rem;
+  margin: 15px 0;
+  min-height: 32px;
+}
+
+#teaseMsg {
+  font-size: 1rem;
+  margin-top: 8px;
+  opacity: 0.9;
+  min-height: 24px;
+}
+
+.buttons {
+  position: relative;
+  width: 320px;
+  height: 110px;
+  margin: auto;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+#acceptBtn {
+  background: #ff3366;
+  color: white;
+  box-shadow: 0 0 15px rgba(255, 51, 102, 0.6);
+  position: absolute;
+  left: 0;
+}
+
+#rejectBtn {
+  position: absolute;
+  right: 0;
+  background: white;
+  color: #ff3366;
+}
+
+#rejectBtn.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+#musicToggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  border-radius: 50%;
+  padding: 10px;
+  border: none;
+  font-size: 1.2rem;
+}
+
+footer {
+  position: fixed;
+  bottom: 10px;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* 💖 Floating hearts */
+.heart {
+  position: fixed;
+  font-size: 22px;
+  pointer-events: none;
+  animation: float 2s ease-out forwards;
+}
+
+@keyframes float {
+  to {
+    transform: translateY(-120px) scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* 🗨️ Whisper text */
+.whisper {
+  position: fixed;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  pointer-events: none;
+  animation: whisperFade 1.8s forwards;
+}
+
+@keyframes whisperFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(-20px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>🌹 A Rose For You 🌹</h1>
+  <p id="fromText"></p>
+  <p class="question" id="questionText"></p>
+  <p id="teaseMsg"></p>
+
+  <div class="buttons">
+    <button id="acceptBtn">Accept 💖</button>
+    <button id="rejectBtn">Reject 😜</button>
+  </div>
+</div>
+
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<button id="musicToggle">🔊</button>
+
+<footer>Made by Shree for Shivam</footer>
+
+<script>
+const acceptBtn = document.getElementById("acceptBtn");
+const rejectBtn = document.getElementById("rejectBtn");
+const fromText = document.getElementById("fromText");
+const questionText = document.getElementById("questionText");
+const teaseMsg = document.getElementById("teaseMsg");
+const music = document.getElementById("bgMusic");
+const toggle = document.getElementById("musicToggle");
+
+let playing = false;
+let speedBoost = 1;
+let fakeDisabledUsed = false;
+
+// URL name
+const params = new URLSearchParams(window.location.search);
+const from = params.get("from");
+if (from) fromText.innerText = `${decodeURIComponent(from)} sent you a rose 🌹`;
+
+// ✍️ Typewriter text
+const message = "Will_you_ accept_ this_ rose?";
+let i = 0;
+(function typeEffect() {
+  if (i < message.length) {
+    questionText.innerText += message[i++];
+    setTimeout(typeEffect, 70);
+  }
+})();
+
+// 💌 Messages
+const teaseTexts = [
+  "Your heart clicked before your mind 😏",
+  "That button is lying to you 💖",
+  "You’re smiling… I can tell 🌸",
+  "This rose knows your answer 🌹",
+  "You’re not escaping this feeling 💫"
+];
+
+// 🗨️ Whisper near cursor
+function whisper(text, x, y) {
+  const el = document.createElement("div");
+  el.className = "whisper";
+  el.innerText = text;
+  el.style.left = x + 10 + "px";
+  el.style.top = y + "px";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1800);
+}
+
+// 😈 Reject behavior
+rejectBtn.addEventListener("click", (e) => {
+
+  // Fake disabled moment (once)
+  if (!fakeDisabledUsed) {
+    fakeDisabledUsed = true;
+    rejectBtn.classList.add("disabled");
+    teaseMsg.innerText = "This rose knows your answer 🌹";
+    setTimeout(() => rejectBtn.classList.remove("disabled"), 900);
+    return;
+  }
+
+  const maxX = window.innerWidth - rejectBtn.offsetWidth - 10;
+  const maxY = window.innerHeight - rejectBtn.offsetHeight - 10;
+
+  rejectBtn.style.transition = `all ${0.3 / speedBoost}s ease`;
+  rejectBtn.style.left = Math.random() * maxX + "px";
+  rejectBtn.style.top = Math.random() * maxY + "px";
+
+  const msg = teaseTexts[Math.floor(Math.random() * teaseTexts.length)];
+  teaseMsg.innerText = msg;
+  whisper(msg, e.clientX, e.clientY);
+
+  speedBoost += 0.25;
+});
+
+// 🧲 Accept button magnet effect
+document.addEventListener("mousemove", e => {
+  const rect = acceptBtn.getBoundingClientRect();
+  const dx = e.clientX - (rect.left + rect.width / 2);
+  const dy = e.clientY - (rect.top + rect.height / 2);
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (distance < 120) {
+    acceptBtn.style.transform =
+      `translate(${dx * 0.15}px, ${dy * 0.15}px) scale(1.1)`;
+  } else {
+    acceptBtn.style.transform = "translate(0,0)";
+  }
+});
+
+// 💥 Accept click
+acceptBtn.addEventListener("click", () => {
+  for (let i = 0; i < 25; i++) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = "💖";
+    heart.style.left = acceptBtn.getBoundingClientRect().left + 40 + "px";
+    heart.style.top = acceptBtn.getBoundingClientRect().top + "px";
+    heart.style.fontSize = 16 + Math.random() * 20 + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 2000);
+  }
+
+  setTimeout(() => {
+    window.location.href = `love.html${from ? `?from=${encodeURIComponent(from)}` : ""}`;
+  }, 800);
+});
+
+// 🎵 Music toggle
+toggle.addEventListener("click", () => {
+  if (!playing) {
+    music.play();
+    toggle.innerText = "🔈";
+  } else {
+    music.pause();
+    toggle.innerText = "🔊";
+  }
+  playing = !playing;
+});
+
+// Mobile autoplay safe
+document.body.addEventListener("click", () => {
+  if (!playing) {
+    music.play();
+    toggle.innerText = "🔈";
+    playing = true;
+  }
+}, { once: true });
+</script>
+
+</body>
+</html>
