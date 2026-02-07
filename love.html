@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Rose Day ❤️</title>
+
+<style>
+body {
+  height: 100vh;
+  background: radial-gradient(circle at top, #ff9a9e, #ff4d6d);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+}
+
+h1 {
+  font-size: 2.5rem;
+  animation: pulse 2s infinite;
+  z-index: 3;
+}
+
+.love-msg {
+  font-size: 1.4rem;
+  margin-top: 15px;
+  max-width: 320px;
+  line-height: 1.6;
+  z-index: 3;
+}
+
+#shareBtn {
+  margin-top: 20px;
+  padding: 12px 26px;
+  border-radius: 30px;
+  border: none;
+  font-size: 1rem;
+  background: white;
+  color: #ff3366;
+  cursor: pointer;
+  z-index: 3;
+}
+
+footer {
+  position: fixed;
+  bottom: 10px;
+  font-size: 0.8rem;
+  opacity: 0.8;
+  z-index: 3;
+}
+
+.fall {
+  position: fixed;
+  top: -50px;
+  font-size: 26px;
+  pointer-events: none;
+  animation: fall linear forwards, sway ease-in-out infinite;
+  z-index: 1;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.6));
+}
+
+@keyframes fall {
+  to { transform: translateY(110vh) rotate(360deg); }
+}
+
+@keyframes sway {
+  0% { margin-left: 0; }
+  50% { margin-left: 40px; }
+  100% { margin-left: 0; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+</style>
+</head>
+
+<body>
+
+<h1>💖 Happy Rose Day 💖</h1>
+<p class="love-msg" id="loveMsg"></p>
+<button id="shareBtn">💌 I Love You Dear </button>
+
+<footer>Made by Shree for Shivam</footer>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const from = decodeURIComponent(params.get("from") || "");
+
+document.getElementById("loveMsg").innerText =
+  from
+    ? `This rose was sent with love by ${from} 🌹❤️
+       Happy Rose Day 🌹
+Just like a rose, you add color, warmth, and a little magic to everything around you. May your day be filled with smiles, love, and moments that make your heart bloom. 💫`
+    : `This rose is just for you 🌹❤️
+      Just like a rose, you add color, warmth, and a little magic to everything around you. May your day be filled with smiles, love, and moments that make your heart bloom. 💫`;
+
+document.getElementById("shareBtn").addEventListener("click", () => {
+  navigator.clipboard.writeText(window.location.href);
+  alert(" Thanks for being in my life dear 🌹");
+});
+
+// Falling animation
+const emojis = ["🌹", "💖", "❤️"];
+
+function createFall(x = null) {
+  const el = document.createElement("div");
+  el.className = "fall";
+  el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+
+  el.style.left = (x ?? Math.random() * window.innerWidth) + "px";
+  el.style.fontSize = 20 + Math.random() * 20 + "px";
+  el.style.opacity = 0.6 + Math.random() * 0.4;
+
+  const time = 5 + Math.random() * 3;
+  el.style.animationDuration = `${time}s, 3s`;
+
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), time * 1000);
+}
+
+setInterval(createFall, 350);
+
+document.addEventListener("click", e => {
+  for (let i = 0; i < 8; i++) {
+    setTimeout(() => createFall(e.clientX), i * 100);
+  }
+});
+</script>
+
+</body>
+</html>
